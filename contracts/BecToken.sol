@@ -7,7 +7,7 @@ pragma solidity ^0.4.16;
 library SafeMath {
   function mul(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a * b;
-    assert(a  0 || c / a  b);
+    assert(a == 0 || c / a == b);
     return c;
   }
 
@@ -251,25 +251,15 @@ contract PausableToken is StandardToken, Pausable {
   function approve(address _spender, uint256 _value) public whenNotPaused returns (bool) {
     return super.approve(_spender, _value);
   }
-
-  // 出现问题的代码
+  
   function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {
-    /// @notice cnt = 2 (by Orionarm)
     uint cnt = _receivers.length;
-
-    /**
-     * @notice 此处发生溢出 (by Orionarm)
-     * 2 * 0x8000000000000000000000000000000000000000000000000000000000000000 = 0
-     */
     uint256 amount = uint256(cnt) * _value;
     require(cnt > 0 && cnt <= 20);
-
-    /// @notice 因乘法溢出而顺利通过此处检查 (by Orionarm)
     require(_value > 0 && balances[msg.sender] >= amount);
 
     balances[msg.sender] = balances[msg.sender].sub(amount);
     for (uint i = 0; i < cnt; i++) {
-        /// @notice 直接给接收地址增加_value的余额  (by Orionarm)
         balances[_receivers[i]] = balances[_receivers[i]].add(_value);
         Transfer(msg.sender, _receivers[i], _value);
     }
