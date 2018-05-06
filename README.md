@@ -7,6 +7,7 @@
 ```shell
 npm install -g truffle # 安装truffle
 npm install # 安装所需库
+npm test    # 执行漏洞测试用例
 ```
 
 ## 联系作者
