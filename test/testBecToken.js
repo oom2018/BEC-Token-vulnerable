@@ -1,9 +1,5 @@
 var helper = require('../helpers/web3Eth');
 
-var BigNum = require('../helpers/bignumber');
-
-'use strict';
-
 const BigNumber = web3.BigNumber
 
 require('chai')
@@ -25,7 +21,6 @@ var account9 = web3.eth.accounts[9];
 var result;
 
 var BecToken = artifacts.require('BecToken.sol');
-// var BecToken = artifacts.require('../contracts/BecToken.sol');
 // 57896044618658097711785492504343953926634992332820282019728792003956564819968
 // @notice 大数的使用方法
 // 0x8000000000000000000000000000000000000000000000000000000000000000
@@ -57,7 +52,7 @@ contract('BecToken', function ([_, owner]) {
     /*
      * @dev 攻击链接：https://etherscan.io/tx/0xad89ff16fd1ebe3a0a7cf4ed282302c06626c1af33221ebe0d3a470aba4a660f
      */
-    it.only(seq + ' case @ batchTransfer attack:', async function () {
+    it(seq + ' case @ batchTransfer attack:', async function () {
         let account = "d4de18319360b51beaa28a7af22728bd8181bd91";
         let at = "d4de18319360b51beaa28a7af22728bd8181bd92";
         let Str0x = "0x";
@@ -105,7 +100,7 @@ contract('BecToken', function ([_, owner]) {
 
     });
 
-    it.only(seq + ' case @ batchTransfer', async function () {
+    it(seq + ' case @ batchTransfer', async function () {
         // console.log(helper.SPACE10, "batchTransfer：", tvl);
         // token.allEvents(helper.callbackEvent);
         let account = "d4de18319360b51beaa28a7af22728bd8181bd91";
