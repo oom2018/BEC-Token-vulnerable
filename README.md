@@ -12,4 +12,4 @@ npm run test    # 执行漏洞测试用例
 
 ## 联系作者
 
-![微信：C299792453](https://avatars2.githubusercontent.com/u/30675228)
+![微信：C299792453](assets/weixin.png)
