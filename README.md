@@ -10,6 +10,8 @@ npm install               # 安装所需库
 npm run test              # 执行漏洞测试用例
 ```
 
+![测试执行结果](assets/1.png)
+
 ## 联系作者
 
 ![微信：C299792453](assets/wx.png)
