@@ -57,5 +57,4 @@ bytes4(sha3("f(uint256,uint32[],bytes10,bytes)"))计算MethodID值。对于固�
 ```
 
 ## 联系作者
-
-![微信：C299792453](assets/wx.png)
+weixin: vk88128
